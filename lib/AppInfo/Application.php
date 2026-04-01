@@ -29,7 +29,7 @@ class Application extends App implements IBootstrap {
             return new TopdeskService(
                 $c->query(IClientService::class),
                 $c->query(IConfig::class),
-                $c->query(IUserManager::class),    // NIEUW: IUserManager toegevoegd
+                $c->query(IUserManager::class),    
                 $c->query(IUserSession::class),
                 $c->query(LoggerInterface::class)
             );
