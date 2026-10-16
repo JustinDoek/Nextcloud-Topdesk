@@ -1,20 +1,60 @@
 <?xml version="1.0"?>
-<info>
-    <id>topdesk_integration</id>
-    <name>Topdesk Integration</name>
-    <summary>Dashboard widget for Topdesk</summary>
-    <description>Description here</description>
-    <version>1.0.0</version>
+<info xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:noNamespaceSchemaLocation="https://apps.nextcloud.com/schema/apps/info.xsd">
+    <id>integration_topdesk</id>
+    <name>TOPdesk</name>
+    <summary>See your own TOPdesk tickets on your Nextcloud dashboard and report a new one without leaving it.</summary>
+    <description><![CDATA[Connects Nextcloud to a TOPdesk SaaS environment.
+
+**Dashboard widget**
+- Your five most recent TOPdesk tickets, newest first, with status and ticket number
+- A button to report a new ticket from the dashboard, without opening TOPdesk
+
+**Admin settings**
+- One connection to the customer's TOPdesk SaaS environment, authenticated with either an
+  application token or an OAuth client-credentials connected application
+- A "Test connection" button that performs a real authenticated call before you save
+- Credentials are encrypted at rest with Nextcloud's own crypto service
+
+**How a Nextcloud user becomes a TOPdesk person**
+
+The app matches each Nextcloud user to exactly one TOPdesk person card and stores that
+person's UUID alongside the value it matched on. Tickets are then always read with a filter
+on that UUID, never on the email address.
+
+That distinction matters because email addresses get reused. When someone leaves and their
+address is handed to a new colleague, matching on the address alone would show the newcomer
+the leaver's ticket history. So the pair is re-verified on every login: if the address now
+resolves to a different TOPdesk person, the app treats that as a new human, replaces the
+stored UUID and shows only the new person's tickets. If it resolves to nobody, or to more
+than one person, the app links nothing at all rather than guessing.
+]]></description>
+    <version>0.1</version>
     <licence>agpl</licence>
-    <author>Justin Doek</author>
-    <namespace>TopdeskIntegration</namespace>
+    <author mail="info@doekworks.eu" homepage="https://doekworks.eu">Doek Works</author>
+    <namespace>IntegrationTopdesk</namespace>
     <category>integration</category>
-    
+    <category>dashboard</category>
+    <category>tools</category>
+    <bugs>https://github.com/JustinDoek/integration_topdesk/issues</bugs>
+
+    <!-- Child order is fixed by the xsd's <xs:sequence>, not free. Inside
+         <dependencies> it is php before nextcloud. The App Store validates
+         against the schema on upload even though Nextcloud itself reads this
+         file with XPath and would not notice. -->
     <dependencies>
-        <nextcloud min-version="32" max-version="33"/>
+        <php min-version="8.1" max-version="8.5"/>
+        <nextcloud min-version="33" max-version="35"/>
     </dependencies>
-    
+
+    <commands>
+        <command>OCA\IntegrationTopdesk\Command\Diagnose</command>
+    </commands>
+
     <settings>
-	<admin-section>OCA\TopdeskIntegration\Sections\AdminSection</admin-section>
+        <admin>OCA\IntegrationTopdesk\Settings\AdminSettings</admin>
+        <admin-section>OCA\IntegrationTopdesk\Settings\AdminSection</admin-section>
+        <personal>OCA\IntegrationTopdesk\Settings\PersonalSettings</personal>
+        <personal-section>OCA\IntegrationTopdesk\Settings\PersonalSection</personal-section>
     </settings>
 </info>

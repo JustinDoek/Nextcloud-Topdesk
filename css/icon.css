@@ -1,0 +1,10 @@
+/**
+ * Fallback for TicketsWidget::getIconClass().
+ *
+ * The dashboard reads getIconUrl() (IIconWidget) and ignores the class, so this is
+ * only here for the places that still ask for a CSS class.
+ */
+.icon-topdesk {
+	background-image: url('../img/app-dark.svg');
+	filter: var(--background-invert-if-dark);
+}

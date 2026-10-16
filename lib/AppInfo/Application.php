@@ -1,54 +1,39 @@
 <?php
+
 declare(strict_types=1);
 
-namespace OCA\TopdeskIntegration\AppInfo;
+namespace OCA\IntegrationTopdesk\AppInfo;
 
-use OCA\TopdeskIntegration\Dashboard\TopdeskWidget;
-use OCA\TopdeskIntegration\Service\TopdeskService;
-use OCA\TopdeskIntegration\Settings\Admin;
+use OCA\IntegrationTopdesk\Dashboard\TicketsWidget;
+use OCA\IntegrationTopdesk\Listener\UserDeletedListener;
+use OCA\IntegrationTopdesk\Listener\UserLoggedInListener;
 use OCP\AppFramework\App;
 use OCP\AppFramework\Bootstrap\IBootContext;
 use OCP\AppFramework\Bootstrap\IBootstrap;
 use OCP\AppFramework\Bootstrap\IRegistrationContext;
-use OCP\AppFramework\IAppContainer;
-use OCP\Http\Client\IClientService;
-use OCP\IConfig;
-use OCP\IUserManager;
-use OCP\IUserSession;
-use Psr\Log\LoggerInterface;
+use OCP\User\Events\BeforeUserDeletedEvent;
+use OCP\User\Events\UserLoggedInEvent;
 
 class Application extends App implements IBootstrap {
-    public const APP_ID = 'topdesk_integration';
+	public const APP_ID = 'integration_topdesk';
 
-    public function __construct(array $urlParams = []) {
-        parent::__construct(self::APP_ID, $urlParams);
-    }
-
-    public function register(IRegistrationContext $context): void {
-        $context->registerService('TopdeskService', function (IAppContainer $c) {
-            return new TopdeskService(
-                $c->query(IClientService::class),
-                $c->query(IConfig::class),
-                $c->query(IUserManager::class),    
-                $c->query(IUserSession::class),
-                $c->query(LoggerInterface::class)
-            );
-        });
-
-        // Registratie van Dashboard Widget
-        $context->registerDashboardWidget(TopdeskWidget::class);
-    $context->registerDeclarativeSettings(\OCA\TopdeskIntegration\Declarative\TopdeskSettingsForm::class);
-
-        $context->registerService('Settings.AdminSection', function (IAppContainer $c) {
-            return new AdminSection(
-                $c->query(IURLGenerator::class),
-                $c->query(IL10N::class)
-            );
-        }); 
-
-    }
-
-    public function boot(IBootContext $context): void {
+	public function __construct(array $urlParams = []) {
+		parent::__construct(self::APP_ID, $urlParams);
 	}
-} 
 
+	public function register(IRegistrationContext $context): void {
+		$context->registerDashboardWidget(TicketsWidget::class);
+
+		// Re-verify the TOPdesk person link at login. This is where a reused email
+		// address gets caught: the address resolves to a different person card, the
+		// stored UUID is replaced, and the user sees their own tickets instead of
+		// their predecessor's.
+		$context->registerEventListener(UserLoggedInEvent::class, UserLoggedInListener::class);
+
+		// Leave nothing behind in oc_preferences when an account goes.
+		$context->registerEventListener(BeforeUserDeletedEvent::class, UserDeletedListener::class);
+	}
+
+	public function boot(IBootContext $context): void {
+	}
+}

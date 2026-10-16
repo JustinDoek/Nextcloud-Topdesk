@@ -1,0 +1,42 @@
+{
+  "name": "integration_topdesk",
+  "version": "1.0.4",
+  "description": "TOPdesk integration for Nextcloud",
+  "private": true,
+  "scripts": {
+    "dev": "vite build --mode development",
+    "build": "vite build",
+    "watch": "vite build --mode development --watch",
+    "test": "php tests/fiql-test.php",
+    "deploy:aio": "npm run build && node scripts/deploy-to-aio.js"
+  },
+  "browserslist": [
+    "extends @nextcloud/browserslist-config"
+  ],
+  "dependencies": {
+    "@nextcloud/axios": "^2.5.1",
+    "@nextcloud/dialogs": "^7.0.0",
+    "@nextcloud/initial-state": "^2.2.0",
+    "@nextcloud/l10n": "^3.1.0",
+    "@nextcloud/router": "^3.0.1",
+    "@nextcloud/vue": "^9.0.0",
+    "vue": "^3.5.0",
+    "vue-material-design-icons": "^5.3.0"
+  },
+  "devDependencies": {
+    "@nextcloud/browserslist-config": "^3.0.1",
+    "@nextcloud/vite-config": "^2.0.0",
+    "sass": "^1.83.0",
+    "typescript": "^6.0.3"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "allowScripts": {
+    "core-js@3.50.0": true,
+    "@parcel/watcher@2.6.0": true,
+    "esbuild@0.25.12": true,
+    "esbuild@0.28.2": true
+  }
+}

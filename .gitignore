@@ -1,0 +1,11 @@
+node_modules/
+
+# Build output — regenerate with `npm run build`.
+js/
+css/vite-*.css
+css/dashboard.css
+css/admin.css
+css/personal.css
+
+# css/icon.css is hand-written and belongs in the repository.
+!css/icon.css
